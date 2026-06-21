@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { getCaptcha, login as authLogin } from '@/services/auth';
@@ -61,10 +62,18 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      enabled
     >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="always"
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        showsVerticalScrollIndicator={false}
+        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
+      >
       <View style={styles.content}>
         <Text style={styles.title}>欢迎回来</Text>
         <Text style={styles.subtitle}>登录您的衣橱管家账户</Text>
@@ -80,6 +89,7 @@ export default function LoginScreen() {
             onChangeText={setUserName}
             autoCapitalize="none"
             placeholder="请输入用户名"
+            returnKeyType="next"
           />
 
           {captcha?.captchaEnabled && (
@@ -94,7 +104,7 @@ export default function LoginScreen() {
                 />
               </View>
               <TouchableOpacity onPress={refreshCaptcha} style={styles.captchaImage}>
-                {captcha.img ? <Image source={{ uri: captcha.img }} style={styles.captchaImageContent} /> : null}
+                {captcha.img ? <Image source={{ uri: captcha.img }} style={styles.captchaImageContent} contentFit="contain" /> : null}
               </TouchableOpacity>
             </View>
           )}
@@ -105,6 +115,8 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             placeholder="••••••••"
+            returnKeyType="done"
+            onSubmitEditing={handleLogin}
           />
 
           <Button
@@ -118,8 +130,12 @@ export default function LoginScreen() {
           <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
             <Text style={styles.signupText}>还没有账户？注册</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
+            <Text style={styles.guestText}>暂不登录，先看看首页</Text>
+          </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -127,6 +143,10 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  scrollContent: {
+    flexGrow: 1,
     padding: 24,
     justifyContent: 'center',
   },
@@ -185,5 +205,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     fontWeight: '500',
+  },
+  guestText: {
+    color: '#756A60',
+    textAlign: 'center',
+    fontWeight: '600',
   },
 });

@@ -3,23 +3,29 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useColorScheme, ActivityIndicator, View } from 'react-native';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
   const segments = useSegments();
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+  const authChecked = useRef(false);
 
   useEffect(() => {
+    if (authChecked.current) return;
+    authChecked.current = true;
     checkAuth();
   }, [checkAuth]);
 
   useEffect(() => {
     if (isLoading) return;
     const inAuthGroup = segments[0] === '(auth)';
-    if (!isAuthenticated && !inAuthGroup) router.replace('/(auth)/login');
+    const inProtectedGroup = ['wardrobe', 'outfits', 'profile'].includes(String(segments[0]));
+    if (!isAuthenticated && inProtectedGroup) router.replace('/(auth)/login');
     if (isAuthenticated && inAuthGroup) router.replace('/(tabs)');
   }, [isAuthenticated, isLoading, router, segments]);
 

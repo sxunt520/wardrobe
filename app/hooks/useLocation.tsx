@@ -3,6 +3,41 @@ import * as Location from 'expo-location';
 import { Platform } from 'react-native';
 import { LocationData } from '@/types/location';
 
+const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timeout = setTimeout(() => reject(new Error('LOCATION_TIMEOUT')), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+};
+
+const getNetworkLocation = async (): Promise<LocationData | null> => {
+  try {
+    const response = await withTimeout(fetch('https://ipwho.is/'), 8000);
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (!data.success || typeof data.latitude !== 'number' || typeof data.longitude !== 'number') {
+      return null;
+    }
+    return {
+      latitude: data.latitude,
+      longitude: data.longitude,
+      city: data.city || data.region || '',
+      country: data.country || '',
+      postalCode: data.postal || '',
+      street: '',
+    };
+  } catch {
+    return null;
+  }
+};
+
 export const useLocation = () => {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,10 +76,18 @@ export const useLocation = () => {
         return null;
       }
 
-      const position = Platform.OS === 'web'
-        ? await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
-        : (await Location.getLastKnownPositionAsync({ maxAge: 1000 * 60 * 10, requiredAccuracy: 1000 }))
-          || await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const cachedPosition = Platform.OS === 'web'
+        ? null
+        : await Location.getLastKnownPositionAsync({
+          maxAge: 1000 * 60 * 60 * 24,
+          requiredAccuracy: 5000,
+        });
+      const position = cachedPosition || await withTimeout(
+        Location.getCurrentPositionAsync({
+          accuracy: Platform.OS === 'web' ? Location.Accuracy.Balanced : Location.Accuracy.Low,
+        }),
+        12000,
+      );
       const { latitude, longitude } = position.coords;
 
       // Web 已不支持 Expo 反向地理编码，但经纬度仍可直接用于天气。
@@ -77,12 +120,19 @@ export const useLocation = () => {
         }
       }
       return currentLocation;
-    } catch (err: any) {
-      const detail = String(err?.message || '');
+    } catch (err: unknown) {
+      const detail = String((err as Error)?.message || '');
+      if (!/denied|permission/i.test(detail)) {
+        const networkLocation = await getNetworkLocation();
+        if (networkLocation) {
+          setLocation(networkLocation);
+          setError(null);
+          return networkLocation;
+        }
+      }
       setError(/denied|permission/i.test(detail)
         ? '位置权限被拒绝，请在浏览器或系统设置中开启'
-        : '暂时无法获取位置，请检查定位服务和网络后重试');
-      console.error('获取位置失败:', err);
+        : '暂时无法获取位置，点击可重新获取');
       return null;
     } finally {
       setLoading(false);
@@ -91,7 +141,7 @@ export const useLocation = () => {
 
   useEffect(() => {
     getCurrentLocation();
-  }, []);
+  }, [getCurrentLocation]);
 
   return {
     location,

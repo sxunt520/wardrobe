@@ -8,6 +8,7 @@ import { useWeather } from '@/hooks/useWeather';
 import { getClothingItems } from '@/services/clothing';
 import { generateOutfits, getOutfitHistory } from '@/services/outfit';
 import { getExploreFeed, getWardrobeReport } from '@/services/wardrobeApp';
+import { useAuthStore } from '@/stores/authStore';
 import type { ClothingItem } from '@/types/clothing';
 import type { OutfitRecommendation } from '@/types/outfit';
 
@@ -15,6 +16,7 @@ const heroImage = require('@/assets/fashion/portrait.jpg');
 
 export default function HomeScreen() {
   const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { location, loading: locationLoading, error: locationError, getLocation } = useLocation();
   const { weather, loading: weatherLoading, error: weatherError, refresh: refreshWeather } = useWeather(location);
   const [outfits, setOutfits] = useState<OutfitRecommendation[]>([]);
@@ -24,23 +26,33 @@ export default function HomeScreen() {
   const [generating, setGenerating] = useState(false);
 
   const load = useCallback(async () => {
-    const [nextClothing, history, nextReport, explore] = await Promise.all([
+    const explore = await getExploreFeed().catch(() => null);
+    setChallenge(explore?.challenges?.[0] || null);
+    if (!isAuthenticated) {
+      setClothing([]);
+      setOutfits([]);
+      setReport(null);
+      return;
+    }
+    const [nextClothing, history, nextReport] = await Promise.all([
       getClothingItems(),
       getOutfitHistory(),
       getWardrobeReport(),
-      getExploreFeed(),
     ]);
     setClothing(nextClothing);
     setOutfits(history.slice(0, 2));
     setReport(nextReport);
-    setChallenge(explore?.challenges?.[0] || null);
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     load().catch(() => null);
   }, [load]);
 
   const generate = async () => {
+    if (!isAuthenticated) {
+      router.push('/(auth)/login');
+      return;
+    }
     if (!clothing.length) {
       router.push('/wardrobe/add-clothing');
       return;
@@ -56,6 +68,14 @@ export default function HomeScreen() {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const openProtected = (path: string) => {
+    if (!isAuthenticated) {
+      router.push('/(auth)/login');
+      return;
+    }
+    router.push(path as any);
   };
 
   const weatherText = locationLoading
@@ -89,8 +109,8 @@ export default function HomeScreen() {
             <Text style={styles.eyebrow}>AI DAILY STYLIST</Text>
             <Text style={styles.title}>衣橱管家</Text>
           </View>
-          <Pressable style={styles.historyButton} onPress={() => router.push('/outfits/history')}>
-            <Ionicons name="time-outline" size={21} color="#191815" />
+          <Pressable style={styles.historyButton} onPress={() => openProtected('/outfits/history')}>
+            <Ionicons name={isAuthenticated ? 'time-outline' : 'person-outline'} size={21} color="#191815" />
           </Pressable>
         </View>
 
@@ -102,26 +122,30 @@ export default function HomeScreen() {
               <Text style={styles.weatherText}>{weatherText}</Text>
             </Pressable>
             <Text style={styles.heroTitle}>
-              {clothing.length ? `从你的 ${clothing.length} 件衣物中，穿出今天。` : '先录入衣物，开始每日搭配。'}
+              {!isAuthenticated
+                ? '每天少想十分钟，也能穿得更像自己。'
+                : clothing.length
+                  ? `从你的 ${clothing.length} 件衣物中，穿出今天。`
+                  : '先录入衣物，开始每日搭配。'}
             </Text>
-            <Text style={styles.heroCopy}>{weatherAdvice}</Text>
+            <Text style={styles.heroCopy}>{isAuthenticated ? weatherAdvice : '登录后录入衣物，AI 会结合天气与场景生成你的专属搭配。'}</Text>
             <Pressable style={styles.generateButton} onPress={generate} disabled={generating}>
-              {generating ? <ActivityIndicator color="#191815" /> : <Ionicons name={clothing.length ? 'sparkles' : 'camera-outline'} size={18} color="#191815" />}
-              <Text style={styles.generateText}>{generating ? '正在生成' : clothing.length ? '生成今日穿搭' : '添加第一件衣物'}</Text>
+              {generating ? <ActivityIndicator color="#191815" /> : <Ionicons name={!isAuthenticated ? 'log-in-outline' : clothing.length ? 'sparkles' : 'camera-outline'} size={18} color="#191815" />}
+              <Text style={styles.generateText}>{generating ? '正在生成' : !isAuthenticated ? '登录并建立我的衣橱' : clothing.length ? '生成今日穿搭' : '添加第一件衣物'}</Text>
             </Pressable>
           </View>
         </ImageBackground>
 
         <View style={styles.quickGrid}>
-          <QuickAction icon="camera-outline" label="录入衣物" copy="拍照 AI 识别" color="#DCE9DF" onPress={() => router.push('/wardrobe/add-clothing')} />
-          <QuickAction icon="options-outline" label="场景搭配" copy="约会、通勤、出差" color="#E8DFD4" onPress={() => router.push('/outfits/generator')} />
+          <QuickAction icon="camera-outline" label="录入衣物" copy="拍照 AI 识别" color="#DCE9DF" onPress={() => openProtected('/wardrobe/add-clothing')} />
+          <QuickAction icon="options-outline" label="场景搭配" copy="约会、通勤、出差" color="#E8DFD4" onPress={() => openProtected('/outfits/generator')} />
           <QuickAction icon="compass-outline" label="穿搭灵感" copy="挑战与热门榜" color="#DCE3EA" onPress={() => router.push('/(tabs)/explore')} />
-          <QuickAction icon="time-outline" label="历史收藏" copy="回看最近搭配" color="#E9DFE3" onPress={() => router.push('/outfits/history')} />
+          <QuickAction icon="time-outline" label="历史收藏" copy="回看最近搭配" color="#E9DFE3" onPress={() => openProtected('/outfits/history')} />
         </View>
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>衣橱脉搏</Text>
-          <Pressable onPress={() => router.push('/(tabs)/wardrobe')}><Text style={styles.link}>进入衣橱</Text></Pressable>
+          <Pressable onPress={() => router.push('/(tabs)/wardrobe')}><Text style={styles.link}>{isAuthenticated ? '进入衣橱' : '登录查看'}</Text></Pressable>
         </View>
         <View style={styles.statsBand}>
           <Stat value={String(clothing.length)} label="全部衣物" />
@@ -162,7 +186,7 @@ export default function HomeScreen() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>最近搭配</Text>
-          <Pressable onPress={() => router.push('/outfits/history')}>
+          <Pressable onPress={() => openProtected('/outfits/history')}>
             <Text style={styles.link}>查看全部</Text>
           </Pressable>
         </View>
@@ -183,8 +207,8 @@ export default function HomeScreen() {
         )) : (
           <View style={styles.empty}>
             <Ionicons name="shirt-outline" size={30} color="#8B7969" />
-            <Text style={styles.emptyTitle}>还没有搭配记录</Text>
-            <Text style={styles.emptyText}>录入衣物后生成第一套今日穿搭。</Text>
+            <Text style={styles.emptyTitle}>{isAuthenticated ? '还没有搭配记录' : '登录后查看专属搭配'}</Text>
+            <Text style={styles.emptyText}>{isAuthenticated ? '录入衣物后生成第一套今日穿搭。' : '衣橱、搭配历史和个人报告会安全保存在你的账户中。'}</Text>
           </View>
         )}
       </ScrollView>

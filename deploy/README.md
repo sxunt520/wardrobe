@@ -1,5 +1,9 @@
 # 服务器连接配置
 
+完整部署、发版、备份、回滚和故障排查流程见：
+
+[`DEPLOYMENT_RUNBOOK.md`](./DEPLOYMENT_RUNBOOK.md)
+
 请填写 `server.env`：
 
 ```env
@@ -9,7 +13,7 @@ SSH_USER=root
 SSH_AUTH_METHOD=password
 SSH_PASSWORD=服务器登录密码
 SSH_PRIVATE_KEY=
-REMOTE_PROJECT_DIR=/opt/wardrobe
+REMOTE_PROJECT_DIR=/data/wardrobe
 API_DOMAIN=api.example.com
 SSL_EMAIL=你的证书通知邮箱
 ```
@@ -38,7 +42,8 @@ ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST"
 - 管理后台：`http://139.155.127.129:181`
 - 管理后台静态目录：`/var/www/wardrobe-admin`
 - NestJS：仅监听服务器本机 `127.0.0.1:8080`
-- MySQL、Redis：仅在 Docker 内部网络访问
+- MySQL：当前映射公网 3306，并由 `DOCKER-USER` 白名单限制来源 IP
+- Redis：仅在 Docker 内部网络访问
 - Nginx 配置：`/etc/nginx/sites-available/wardrobe-api`
 - 管理后台 Nginx 配置：`/etc/nginx/sites-available/wardrobe-admin`
 

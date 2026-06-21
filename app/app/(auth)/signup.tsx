@@ -47,9 +47,14 @@ export default function SignupScreen() {
   return (
     <KeyboardAvoidingView 
       style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.content}>
           <Text style={styles.title}>创建账户</Text>
           <Text style={styles.subtitle}>开启智能衣橱管理之旅</Text>
@@ -111,6 +116,9 @@ export default function SignupScreen() {
           <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
               <Text style={styles.loginText}>已有账户？登录</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
+              <Text style={styles.guestText}>暂不注册，先看看首页</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -162,5 +170,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     fontWeight: '500',
+  },
+  guestText: {
+    color: '#756A60',
+    textAlign: 'center',
+    fontWeight: '600',
   },
 });

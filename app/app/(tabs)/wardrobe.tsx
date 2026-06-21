@@ -5,12 +5,14 @@ import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { getClothingItems } from '@/services/clothing';
+import { useAuthStore } from '@/stores/authStore';
 import type { ClothingItem } from '@/types/clothing';
 
 const filters = ['全部', '上衣', '裤装', '裙装', '外套', '鞋包', '配饰'];
 
 export default function WardrobeScreen() {
   const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [activeFilter, setActiveFilter] = useState('全部');
   const [items, setItems] = useState<ClothingItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -20,13 +22,31 @@ export default function WardrobeScreen() {
   }, []);
 
   useFocusEffect(useCallback(() => {
-    load().catch(() => null);
-  }, [load]));
+    if (isAuthenticated) load().catch(() => null);
+    else setItems([]);
+  }, [isAuthenticated, load]));
 
   const visibleItems = useMemo(
     () => activeFilter === '全部' ? items : items.filter((item) => item.category === activeFilter),
     [activeFilter, items],
   );
+
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.guestPage}>
+          <View style={styles.guestIcon}><Ionicons name="shirt-outline" size={38} color="#A56D4D" /></View>
+          <Text style={styles.guestTitle}>建立你的数字衣橱</Text>
+          <Text style={styles.guestCopy}>登录后拍照录入衣物，AI 会自动识别类别、颜色和季节，并为你生成每日搭配。</Text>
+          <Pressable style={styles.guestButton} onPress={() => router.push('/(auth)/login')}>
+            <Ionicons name="log-in-outline" size={19} color="#FFF8EF" />
+            <Text style={styles.guestButtonText}>登录或注册</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push('/(tabs)')}><Text style={styles.guestLink}>返回首页继续看看</Text></Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -114,4 +134,11 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', backgroundColor: '#FFF8EF', padding: 38, borderRadius: 8, marginTop: 8 },
   emptyTitle: { fontSize: 17, fontWeight: '800', marginTop: 12 },
   emptyLink: { color: '#A56D4D', fontWeight: '800', marginTop: 10 },
+  guestPage: { flex: 1, padding: 32, alignItems: 'center', justifyContent: 'center' },
+  guestIcon: { width: 76, height: 76, borderRadius: 8, backgroundColor: '#FFF8EF', alignItems: 'center', justifyContent: 'center' },
+  guestTitle: { color: '#191815', fontSize: 25, fontWeight: '900', marginTop: 22 },
+  guestCopy: { color: '#756A60', lineHeight: 22, textAlign: 'center', marginTop: 12, maxWidth: 330 },
+  guestButton: { width: '100%', maxWidth: 330, minHeight: 50, borderRadius: 8, backgroundColor: '#191815', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 28 },
+  guestButtonText: { color: '#FFF8EF', fontWeight: '800' },
+  guestLink: { color: '#A56D4D', fontWeight: '800', marginTop: 18 },
 });

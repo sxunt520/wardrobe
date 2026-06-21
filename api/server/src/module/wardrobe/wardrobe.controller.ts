@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { User, UserDto } from 'src/module/system/user/user.decorator';
+import { NotRequireAuth, User, UserDto } from 'src/module/system/user/user.decorator';
 import {
   AnalyzeClothingDto,
   ClothingQueryDto,
@@ -24,6 +24,7 @@ export class WardrobeController {
   constructor(private readonly wardrobeService: WardrobeService) {}
 
   @Get('health')
+  @NotRequireAuth()
   @ApiOperation({ summary: 'APP健康检查' })
   health() {
     return { ok: true, service: 'wardrobe-manager-api' };
@@ -148,6 +149,7 @@ export class WardrobeController {
   }
 
   @Get('explore')
+  @NotRequireAuth()
   @ApiOperation({ summary: '灵感探索' })
   explore() {
     return this.wardrobeService.explore();

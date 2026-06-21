@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, T
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { getExploreFeed } from '@/services/wardrobeApp';
+import { useAuthStore } from '@/stores/authStore';
 
 type Challenge = {
   id: string;
@@ -24,6 +25,7 @@ type PopularOutfit = {
 
 export default function ExploreScreen() {
   const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [popularOutfits, setPopularOutfits] = useState<PopularOutfit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,9 +82,9 @@ export default function ExploreScreen() {
               <Text style={styles.tag}>{challenge.tag}</Text>
               <Text style={styles.challengeTitle}>{challenge.title}</Text>
               <Text style={styles.reward}>{challenge.reward} · {challenge.participants} 人参与</Text>
-              <Pressable style={styles.challengeButton} onPress={() => router.push('/outfits/generator')}>
+              <Pressable style={styles.challengeButton} onPress={() => router.push(isAuthenticated ? '/outfits/generator' : '/(auth)/login')}>
                 <Ionicons name="sparkles" size={16} color="#191815" />
-                <Text style={styles.challengeButtonText}>生成主题搭配</Text>
+                <Text style={styles.challengeButtonText}>{isAuthenticated ? '生成主题搭配' : '登录后参与挑战'}</Text>
               </Pressable>
             </View>
           ))}

@@ -14,6 +14,8 @@ interface InputProps {
   error?: string;
   icon?: string;
   onIconPress?: () => void;
+  returnKeyType?: 'done' | 'next' | 'go';
+  onSubmitEditing?: () => void;
 }
 
 export const Input: React.FC<InputProps> = ({ 
@@ -26,7 +28,9 @@ export const Input: React.FC<InputProps> = ({
   autoCapitalize = 'sentences',
   error,
   icon,
-  onIconPress 
+  onIconPress,
+  returnKeyType,
+  onSubmitEditing,
 }) => {
   const colors = useThemeColors();
   const [isFocused, setIsFocused] = useState(false);
@@ -49,6 +53,12 @@ export const Input: React.FC<InputProps> = ({
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
+          autoCorrect={false}
+          autoComplete="off"
+          importantForAutofill="no"
+          returnKeyType={returnKeyType}
+          onSubmitEditing={onSubmitEditing}
+          blurOnSubmit={returnKeyType === 'done' || returnKeyType === 'go'}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />

@@ -10,24 +10,47 @@ import { useAuthStore } from '@/stores/authStore';
 export default function ProfileScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const [profile, setProfile] = useState<any>(null);
   const [report, setReport] = useState<any>(null);
 
   useFocusEffect(useCallback(() => {
+    if (!isAuthenticated) {
+      setProfile(null);
+      setReport(null);
+      return;
+    }
     Promise.all([getWardrobeProfile(), getWardrobeReport()])
       .then(([nextProfile, nextReport]) => {
         setProfile(nextProfile);
         setReport(nextReport);
       })
       .catch(() => null);
-  }, []));
+  }, [isAuthenticated]));
 
   const signOut = async () => {
     await logout();
     await clearAuth();
     router.replace('/(auth)/login');
   };
+
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.guestPage}>
+          <View style={styles.guestIcon}><Ionicons name="person-outline" size={38} color="#A56D4D" /></View>
+          <Text style={styles.guestTitle}>登录你的衣橱账户</Text>
+          <Text style={styles.guestCopy}>同步衣物、搭配历史、身材档案和风格报告，在 Web、Android 与 iOS 间持续使用。</Text>
+          <Pressable style={styles.guestButton} onPress={() => router.push('/(auth)/login')}>
+            <Ionicons name="log-in-outline" size={19} color="#FFF8EF" />
+            <Text style={styles.guestButtonText}>登录或注册</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push('/(tabs)')}><Text style={styles.guestLink}>返回首页继续看看</Text></Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -129,4 +152,11 @@ const styles = StyleSheet.create({
   status: { color: '#8B5A3C', backgroundColor: '#EED8C6', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 5, fontSize: 11, fontWeight: '800' },
   logout: { marginTop: 16, minHeight: 52, borderRadius: 8, borderWidth: 1, borderColor: '#E3B7B2', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   logoutText: { color: '#B42318', fontWeight: '800' },
+  guestPage: { flex: 1, padding: 32, alignItems: 'center', justifyContent: 'center' },
+  guestIcon: { width: 76, height: 76, borderRadius: 8, backgroundColor: '#FFF8EF', alignItems: 'center', justifyContent: 'center' },
+  guestTitle: { color: '#191815', fontSize: 25, fontWeight: '900', marginTop: 22 },
+  guestCopy: { color: '#756A60', lineHeight: 22, textAlign: 'center', marginTop: 12, maxWidth: 330 },
+  guestButton: { width: '100%', maxWidth: 330, minHeight: 50, borderRadius: 8, backgroundColor: '#191815', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 28 },
+  guestButtonText: { color: '#FFF8EF', fontWeight: '800' },
+  guestLink: { color: '#A56D4D', fontWeight: '800', marginTop: 18 },
 });
