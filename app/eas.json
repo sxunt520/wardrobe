@@ -4,6 +4,11 @@
     "appVersionSource": "local"
   },
   "build": {
+    "development": {
+      "android": {
+        "buildType": "apk"   // 强制生成 .apk
+      }
+    },
     "preview": {
       "distribution": "internal",
       "android": {
