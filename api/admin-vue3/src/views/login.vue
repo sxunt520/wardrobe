@@ -27,7 +27,9 @@
             <svg-icon icon-class="validCode" class="input-icon" />
           </template>
         </el-input>
-        <div class="login-code" v-html="authCodeInfo.imgUrl" @click="useAuthCode.getValidateCode(loginForm.model, true)" />
+        <div class="login-code" @click="useAuthCode.getValidateCode(loginForm.model, true)">
+          <img :src="authCodeInfo.imgUrl" alt="验证码" />
+        </div>
       </el-form-item>
 
       <div class="login-tips">
@@ -157,6 +159,9 @@ loginForm.model = useAuthCode.getUserCookie(loginForm.model)
   float: right;
   text-align: right;
   img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     cursor: pointer;
     vertical-align: middle;
   }

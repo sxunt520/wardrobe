@@ -14,7 +14,7 @@
  Date: 28/02/2025 17:07:11
 */
 
-SET NAMES utf8;
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -46,7 +46,7 @@ CREATE TABLE `gen_table` (
   `update_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`table_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='代码生成业务表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='代码生成业务表';
 
 -- ----------------------------
 -- Records of gen_table
@@ -86,7 +86,7 @@ CREATE TABLE `gen_table_column` (
   `update_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`column_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='代码生成业务表字段';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='代码生成业务表字段';
 
 -- ----------------------------
 -- Records of gen_table_column
@@ -112,7 +112,7 @@ CREATE TABLE `sys_config` (
   `status` char(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='参数配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='参数配置表';
 
 -- ----------------------------
 -- Records of sys_config
@@ -147,7 +147,7 @@ CREATE TABLE `sys_dept` (
   `update_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`dept_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='部门表';
+) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='部门表';
 
 -- ----------------------------
 -- Records of sys_dept
@@ -186,7 +186,7 @@ CREATE TABLE `sys_dict_data` (
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`dict_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='字典数据表';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='字典数据表';
 
 -- ----------------------------
 -- Records of sys_dict_data
@@ -240,7 +240,7 @@ CREATE TABLE `sys_dict_type` (
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`dict_id`),
   UNIQUE KEY `IDX_f4e4273658733a3bbe6a2479bf` (`dict_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='字典类型表';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='字典类型表';
 
 -- ----------------------------
 -- Records of sys_dict_type
@@ -271,13 +271,14 @@ CREATE TABLE `sys_job` (
   `misfire_policy` varchar(20) DEFAULT '3' COMMENT '计划执行错误策略（1立即执行 2执行一次 3放弃执行）',
   `concurrent` char(1) DEFAULT '1' COMMENT '是否并发执行（0允许 1禁止）',
   `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1暂停）',
+  `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   `create_by` varchar(64) NOT NULL DEFAULT '' COMMENT '创建者',
   `create_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
   `update_by` varchar(64) NOT NULL DEFAULT '' COMMENT '更新者',
   `update_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`job_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='定时任务表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='定时任务表';
 
 -- ----------------------------
 -- Records of sys_job
@@ -302,7 +303,7 @@ CREATE TABLE `sys_job_log` (
   `exception_info` varchar(2000) DEFAULT NULL COMMENT '异常信息',
   `create_time` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
   PRIMARY KEY (`job_log_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='任务调度日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='任务调度日志表';
 
 -- ----------------------------
 -- Records of sys_job_log
@@ -326,7 +327,7 @@ CREATE TABLE `sys_logininfor` (
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   `login_time` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '访问时间',
   PRIMARY KEY (`info_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='系统访问记录';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统访问记录';
 
 -- ----------------------------
 -- Records of sys_logininfor
@@ -360,7 +361,7 @@ CREATE TABLE `sys_menu` (
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`menu_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2000 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='菜单权限表';
+) ENGINE=InnoDB AUTO_INCREMENT=2000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='菜单权限表';
 
 -- ----------------------------
 -- Records of sys_menu
@@ -470,7 +471,7 @@ CREATE TABLE `sys_notice` (
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`notice_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='通知公告表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通知公告表';
 
 -- ----------------------------
 -- Records of sys_notice
@@ -503,7 +504,7 @@ CREATE TABLE `sys_oper_log` (
   `status` char(1) NOT NULL DEFAULT '0' COMMENT '登录状态',
   `cost_time` int NOT NULL DEFAULT '0' COMMENT '消耗时间',
   PRIMARY KEY (`oper_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='操作日志记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志记录';
 
 -- ----------------------------
 -- Records of sys_oper_log
@@ -528,7 +529,7 @@ CREATE TABLE `sys_post` (
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标志',
   PRIMARY KEY (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='岗位信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='岗位信息表';
 
 -- ----------------------------
 -- Records of sys_post
@@ -560,7 +561,7 @@ CREATE TABLE `sys_role` (
   `update_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='角色信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色信息表';
 
 -- ----------------------------
 -- Records of sys_role
@@ -578,7 +579,7 @@ CREATE TABLE `sys_role_dept` (
   `role_id` int NOT NULL DEFAULT '0' COMMENT '角色ID',
   `dept_id` int NOT NULL DEFAULT '0' COMMENT '部门ID',
   PRIMARY KEY (`role_id`,`dept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='角色和部门关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色和部门关联表';
 
 -- ----------------------------
 -- Records of sys_role_dept
@@ -597,7 +598,7 @@ CREATE TABLE `sys_role_menu` (
   `role_id` int NOT NULL DEFAULT '0' COMMENT '角色ID',
   `menu_id` int NOT NULL DEFAULT '0' COMMENT '菜单ID',
   PRIMARY KEY (`role_id`,`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='角色和菜单关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色和菜单关联表';
 
 -- ----------------------------
 -- Records of sys_role_menu
@@ -709,7 +710,7 @@ CREATE TABLE `sys_upload` (
   `url` varchar(255) NOT NULL COMMENT '文件地址',
   `ext` varchar(255) DEFAULT NULL COMMENT '拓展名',
   PRIMARY KEY (`upload_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='文件上传记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文件上传记录';
 
 -- ----------------------------
 -- Records of sys_upload
@@ -742,7 +743,7 @@ CREATE TABLE `sys_user` (
   `avatar` varchar(255) NOT NULL DEFAULT '' COMMENT '头像地址',
   `login_date` timestamp NULL DEFAULT NULL COMMENT '最后登录时间',
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='用户信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户信息表';
 
 -- ----------------------------
 -- Records of sys_user
@@ -760,7 +761,7 @@ CREATE TABLE `sys_user_post` (
   `user_id` int NOT NULL COMMENT '用户ID',
   `post_id` int NOT NULL COMMENT '岗位ID',
   PRIMARY KEY (`user_id`,`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='用户与岗位关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户与岗位关联表';
 
 -- ----------------------------
 -- Records of sys_user_post
@@ -778,7 +779,7 @@ CREATE TABLE `sys_user_role` (
   `user_id` int NOT NULL COMMENT '用户ID',
   `role_id` int NOT NULL COMMENT '角色ID',
   PRIMARY KEY (`user_id`,`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='用户和角色关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户和角色关联表';
 
 -- ----------------------------
 -- Records of sys_user_role
@@ -798,7 +799,7 @@ CREATE TABLE IF NOT EXISTS `app_wardrobe_profile` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`profile_id`), UNIQUE KEY `uk_wardrobe_profile_user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='衣橱管家用户档案';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='衣橱管家用户档案';
 
 CREATE TABLE IF NOT EXISTS `app_clothing_item` (
   `clothing_id` varchar(36) NOT NULL, `user_id` varchar(64) NOT NULL, `name` varchar(100) NOT NULL, `category` varchar(32) NOT NULL,
@@ -807,7 +808,7 @@ CREATE TABLE IF NOT EXISTS `app_clothing_item` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`clothing_id`), KEY `idx_clothing_user` (`user_id`), KEY `idx_clothing_category` (`category`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='衣橱单品';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='衣橱单品';
 
 CREATE TABLE IF NOT EXISTS `app_outfit` (
   `outfit_id` varchar(36) NOT NULL, `user_id` varchar(64) NOT NULL, `scene` varchar(32) NOT NULL, `title` varchar(120) NOT NULL,
@@ -818,7 +819,7 @@ CREATE TABLE IF NOT EXISTS `app_outfit` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`outfit_id`), KEY `idx_outfit_user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI搭配记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI搭配记录';
 
 CREATE TABLE IF NOT EXISTS `app_try_on_record` (
   `record_id` varchar(36) NOT NULL, `user_id` varchar(64) NOT NULL, `outfit_id` varchar(36) NOT NULL,
@@ -831,7 +832,7 @@ CREATE TABLE IF NOT EXISTS `app_try_on_record` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL,
   `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`record_id`), KEY `idx_try_on_user_time` (`user_id`,`create_time`), KEY `idx_try_on_outfit` (`outfit_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='真人试穿历史记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='真人试穿历史记录';
 
 INSERT INTO `app_try_on_record` (
   `record_id`, `user_id`, `outfit_id`, `outfit_title`, `scene`, `clothing_ids`,
@@ -855,7 +856,7 @@ CREATE TABLE IF NOT EXISTS `app_style_challenge` (
   `participants` int NOT NULL DEFAULT 0, `colors` text, `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `update_by` varchar(64) NOT NULL DEFAULT '', `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL,
   `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0', PRIMARY KEY (`challenge_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='每日搭配挑战';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='每日搭配挑战';
 
 CREATE TABLE IF NOT EXISTS `app_community_submission` (
   `submission_id` varchar(36) NOT NULL, `user_id` varchar(64) NOT NULL, `challenge_id` varchar(64) NOT NULL DEFAULT '', `title` varchar(120) NOT NULL,
@@ -863,7 +864,7 @@ CREATE TABLE IF NOT EXISTS `app_community_submission` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`submission_id`), KEY `idx_submission_audit` (`audit_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='社区穿搭投稿';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='社区穿搭投稿';
 
 CREATE TABLE IF NOT EXISTS `app_ai_call_log` (
   `log_id` bigint NOT NULL AUTO_INCREMENT, `user_id` varchar(64) NOT NULL DEFAULT '', `scene` varchar(64) NOT NULL DEFAULT '', `model` varchar(64) NOT NULL DEFAULT '',
@@ -871,7 +872,7 @@ CREATE TABLE IF NOT EXISTS `app_ai_call_log` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`log_id`), KEY `idx_ai_log_status` (`call_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI调用日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI调用日志';
 
 CREATE TABLE IF NOT EXISTS `app_user_feedback` (
   `feedback_id` varchar(36) NOT NULL, `user_id` varchar(64) NOT NULL, `feedback_type` varchar(32) NOT NULL DEFAULT '建议', `title` varchar(120) NOT NULL,
@@ -879,7 +880,7 @@ CREATE TABLE IF NOT EXISTS `app_user_feedback` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`feedback_id`), KEY `idx_feedback_status` (`handle_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='APP用户反馈';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='APP用户反馈';
 
 CREATE TABLE IF NOT EXISTS `app_user_membership` (
   `membership_id` bigint NOT NULL AUTO_INCREMENT, `user_id` varchar(64) NOT NULL, `plan_code` varchar(32) NOT NULL DEFAULT 'free',
@@ -887,7 +888,7 @@ CREATE TABLE IF NOT EXISTS `app_user_membership` (
   `create_by` varchar(64) NOT NULL DEFAULT '', `create_time` datetime DEFAULT CURRENT_TIMESTAMP, `update_by` varchar(64) NOT NULL DEFAULT '',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `remark` varchar(500) DEFAULT NULL, `status` char(1) NOT NULL DEFAULT '0', `del_flag` char(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`membership_id`), UNIQUE KEY `uk_membership_user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='APP会员状态';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='APP会员状态';
 
 -- 衣橱管家管理菜单
 INSERT INTO `sys_menu` (`menu_id`,`menu_name`,`parent_id`,`order_num`,`path`,`component`,`query`,`is_frame`,`is_cache`,`menu_type`,`visible`,`status`,`perms`,`icon`,`create_by`,`remark`,`del_flag`) VALUES

@@ -8,6 +8,8 @@ services:
       MYSQL_USER: ${MYSQL_USERNAME:-wardrobe}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "${MYSQL_PUBLIC_BIND:-127.0.0.1}:3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
@@ -16,6 +18,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
+    logging: &default-logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   redis:
     image: redis:7.4-alpine
@@ -30,6 +37,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
+    logging: *default-logging
 
   api:
     build: .
@@ -40,7 +48,20 @@ services:
       MYSQL_HOST: mysql
       REDIS_HOST: redis
     ports:
-      - "${APP_PORT:-8080}:8080"
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const net=require('net');const socket=net.connect(8080,'127.0.0.1',()=>{socket.end();process.exit(0)});socket.on('error',()=>process.exit(1));",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging: *default-logging
     depends_on:
       mysql:
         condition: service_healthy

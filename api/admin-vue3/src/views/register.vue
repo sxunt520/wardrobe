@@ -25,7 +25,9 @@
         <el-input size="large" v-model="registerForm.model.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter="handleRegister">
           <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
         </el-input>
-        <div class="register-code" v-html="authCodeInfo.imgUrl" @click="useAuthCode.getValidateCode(registerForm.model, true)"></div>
+        <div class="register-code" @click="useAuthCode.getValidateCode(registerForm.model, true)">
+          <img :src="authCodeInfo.imgUrl" alt="验证码" />
+        </div>
       </el-form-item>
       <el-form-item style="width: 100%">
         <el-button :loading="authCodeInfo.loading" size="large" type="primary" style="width: 100%" @click="handleRegister">
@@ -157,6 +159,9 @@ useAuthCode.getValidateCode(registerForm.model, false)
   float: right;
   text-align: right;
   img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     cursor: pointer;
     vertical-align: middle;
   }

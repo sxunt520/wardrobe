@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "wardrobe-manager",
+    "name": "衣橱管家",
     "slug": "wardrobe-manager",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,6 +18,8 @@
       }
     },
     "android": {
+      "package": "com.if43vip.wardrobemanager",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

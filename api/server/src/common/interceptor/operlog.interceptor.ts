@@ -13,10 +13,11 @@ export class OperlogInterceptor implements NestInterceptor {
   constructor(readonly logService: OperlogService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const { summary } = this.reflector.getAllAndOverride(`swagger/apiOperation`, [context.getHandler()]);
+    const operation = this.reflector.getAllAndOverride<{ summary?: string }>(`swagger/apiOperation`, [context.getHandler()]);
     const logConfig: OperlogConfig = this.reflector.get('operlog', context.getHandler());
 
     const handlerName = context.getHandler().name;
+    const summary = operation?.summary || handlerName;
 
     const now = Date.now();
 

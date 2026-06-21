@@ -46,9 +46,9 @@
     <pagination v-show="total > 0" :total="total" v-model:page="query.pageNum" v-model:limit="query.pageSize" @pagination="load" />
 
     <el-dialog v-model="challengeOpen" :title="challengeForm.challengeId ? '编辑挑战' : '新增挑战'" width="560px">
-      <el-form :model="challengeForm" label-width="90px">
-        <el-form-item label="标签"><el-input v-model="challengeForm.tag" placeholder="#轻通勤" /></el-form-item>
-        <el-form-item label="标题"><el-input v-model="challengeForm.title" /></el-form-item>
+      <el-form ref="challengeFormRef" :model="challengeForm" :rules="challengeRules" label-width="90px">
+        <el-form-item label="标签" prop="tag"><el-input v-model.trim="challengeForm.tag" maxlength="64" placeholder="#轻通勤" /></el-form-item>
+        <el-form-item label="标题" prop="title"><el-input v-model.trim="challengeForm.title" maxlength="120" /></el-form-item>
         <el-form-item label="奖励"><el-input v-model="challengeForm.reward" /></el-form-item>
         <el-form-item label="主题色"><el-input v-model="challengeColors" placeholder="#111111,#ffffff" /></el-form-item>
       </el-form>
@@ -84,6 +84,11 @@ const total = ref(0)
 const query = reactive({ pageNum: 1, pageSize: 10, keyword: undefined, status: undefined, category: undefined })
 const challengeOpen = ref(false)
 const challengeForm = ref({})
+const challengeFormRef = ref()
+const challengeRules = {
+  tag: [{ required: true, message: '请输入挑战标签', trigger: 'blur' }],
+  title: [{ required: true, message: '请输入挑战标题', trigger: 'blur' }]
+}
 const challengeColors = ref('')
 const memberOpen = ref(false)
 const memberForm = ref({})
@@ -112,11 +117,17 @@ function openChallenge(row = {}) {
   challengeForm.value = { ...row }
   challengeColors.value = (row.colors || []).join(',')
   challengeOpen.value = true
+  nextTick(() => challengeFormRef.value?.clearValidate())
 }
-function saveChallenge() {
+async function saveChallenge() {
+  const valid = await challengeFormRef.value?.validate().catch(() => false)
+  if (!valid) return
   const data = { ...challengeForm.value, colors: challengeColors.value.split(',').map(v => v.trim()).filter(Boolean) }
   const request = data.challengeId ? updateChallenge(data) : createChallenge(data)
-  request.then(() => { proxy.$modal.msgSuccess('保存成功'); challengeOpen.value = false; load() })
+  await request
+  proxy.$modal.msgSuccess('保存成功')
+  challengeOpen.value = false
+  load()
 }
 function editMember(row) {
   memberForm.value = { userId: row.userId, planCode: row.planCode || 'free', expireTime: row.expireTime, memberStatus: '0' }

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
-import { WardrobeAdminQueryDto } from './dto/admin';
+import { SaveStyleChallengeDto, WardrobeAdminQueryDto } from './dto/admin';
 import { WardrobeAdminService } from './wardrobe-admin.service';
 import { Operlog } from 'src/common/decorators/operlog.decorator';
 import { BusinessType } from 'src/common/constant/business.constant';
@@ -52,14 +52,14 @@ export class WardrobeAdminController {
   @Post('challenges')
   @RequirePermission('wardrobe:challenge:add')
   @Operlog({ businessType: BusinessType.INSERT })
-  createChallenge(@Body() body: any) {
+  createChallenge(@Body() body: SaveStyleChallengeDto) {
     return this.service.saveChallenge(body);
   }
 
   @Put('challenges')
   @RequirePermission('wardrobe:challenge:edit')
   @Operlog({ businessType: BusinessType.UPDATE })
-  updateChallenge(@Body() body: any) {
+  updateChallenge(@Body() body: SaveStyleChallengeDto) {
     return this.service.saveChallenge(body);
   }
 

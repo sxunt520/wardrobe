@@ -1,4 +1,6 @@
 server.env
+backend.env
+admin.env
 keys/
 .ssh/
 *.pem

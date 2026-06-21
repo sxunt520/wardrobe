@@ -43,14 +43,14 @@ export class WardrobeAdminService {
   listUsers(query: WardrobeAdminQueryDto) {
     const qb = this.userRepo
       .createQueryBuilder('u')
-      .leftJoin(WardrobeProfileEntity, 'p', 'p.user_id = CAST(u.user_id AS CHAR) AND p.del_flag = :normal', { normal: '0' })
-      .leftJoin(UserMembershipEntity, 'm', 'm.user_id = CAST(u.user_id AS CHAR) AND m.del_flag = :normal', { normal: '0' })
-      .leftJoin(ClothingItemEntity, 'c', 'c.user_id = CAST(u.user_id AS CHAR) AND c.del_flag = :normal', { normal: '0' })
+      .leftJoin(WardrobeProfileEntity, 'p', 'CAST(p.user_id AS UNSIGNED) = u.user_id AND p.del_flag = :normal', { normal: '0' })
+      .leftJoin(UserMembershipEntity, 'm', 'CAST(m.user_id AS UNSIGNED) = u.user_id AND m.del_flag = :normal', { normal: '0' })
+      .leftJoin(ClothingItemEntity, 'c', 'CAST(c.user_id AS UNSIGNED) = u.user_id AND c.del_flag = :normal', { normal: '0' })
       .select(['u.userId AS userId', 'u.userName AS userName', 'u.nickName AS nickName', 'u.email AS email', 'u.status AS status', 'u.createTime AS createTime'])
-      .addSelect('p.body_shape', 'bodyShape')
-      .addSelect('p.skin_tone', 'skinTone')
-      .addSelect('COALESCE(m.plan_code, "free")', 'planCode')
-      .addSelect('m.expire_time', 'expireTime')
+      .addSelect('MAX(p.body_shape)', 'bodyShape')
+      .addSelect('MAX(p.skin_tone)', 'skinTone')
+      .addSelect('COALESCE(MAX(m.plan_code), "free")', 'planCode')
+      .addSelect('MAX(m.expire_time)', 'expireTime')
       .addSelect('COUNT(c.clothing_id)', 'clothingCount')
       .where('u.user_type = :type AND u.del_flag = :normal', { type: '10', normal: '0' })
       .groupBy('u.user_id');
@@ -61,7 +61,7 @@ export class WardrobeAdminService {
   listClothing(query: WardrobeAdminQueryDto) {
     const qb = this.clothingRepo
       .createQueryBuilder('c')
-      .leftJoin(UserEntity, 'u', 'CAST(u.user_id AS CHAR) = c.user_id')
+      .leftJoin(UserEntity, 'u', 'u.user_id = CAST(c.user_id AS UNSIGNED)')
       .select([
         'c.clothingId AS clothingId',
         'c.userId AS userId',
@@ -84,7 +84,7 @@ export class WardrobeAdminService {
   listOutfits(query: WardrobeAdminQueryDto) {
     const qb = this.outfitRepo
       .createQueryBuilder('o')
-      .leftJoin(UserEntity, 'u', 'CAST(u.user_id AS CHAR) = o.user_id')
+      .leftJoin(UserEntity, 'u', 'u.user_id = CAST(o.user_id AS UNSIGNED)')
       .select([
         'o.outfitId AS outfitId',
         'o.userId AS userId',
@@ -116,7 +116,12 @@ export class WardrobeAdminService {
 
   async saveChallenge(body: Partial<StyleChallengeEntity>) {
     const current = body.challengeId ? await this.challengeRepo.findOne({ where: { challengeId: body.challengeId } }) : null;
-    return ResultData.ok(await this.challengeRepo.save(this.challengeRepo.merge(current || this.challengeRepo.create(), body)));
+    const challenge = this.challengeRepo.merge(current || this.challengeRepo.create(), {
+      ...body,
+      reward: body.reward || '',
+      colors: body.colors || [],
+    });
+    return ResultData.ok(await this.challengeRepo.save(challenge));
   }
 
   async updateEntity(type: string, id: string, body: any) {
