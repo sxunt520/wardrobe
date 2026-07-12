@@ -51,3 +51,20 @@ export class RegisterDto extends LoginDto {
   @MaxLength(50)
   email?: string;
 }
+
+export class WechatLoginDto {
+  @ApiProperty({ required: true, description: 'wx.login 返回的 code' })
+  @IsString()
+  code: string;
+
+  @ApiProperty({ required: false, description: '微信昵称，可选' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(30)
+  nickName?: string;
+
+  @ApiProperty({ required: false, description: '微信头像，可选' })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+}

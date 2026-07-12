@@ -61,6 +61,11 @@ aliyun:
     tryOnModel: 'aitryon-plus'
     allowFallback: true
 
+wechat:
+  miniProgram:
+    appid: ''
+    secret: ''
+
 # jwt 配置
 jwt:
   secretkey: 'development-only-change-me-before-deploying'

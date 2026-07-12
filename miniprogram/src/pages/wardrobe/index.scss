@@ -1,0 +1,90 @@
+.tabs {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 24px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 68px;
+  min-width: 116px;
+  margin-right: 14px;
+  padding: 0 24px;
+  color: #6f665c;
+  font-size: 26px;
+  font-weight: 700;
+  background: #fffaf3;
+  border-radius: 999px;
+}
+
+.tab.active {
+  color: #fff;
+  background: #111;
+}
+
+.clothing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding-bottom: 120px;
+}
+
+.clothing-card {
+  overflow: hidden;
+  background: #fffaf3;
+  border-radius: 20px;
+}
+
+.clothing-image,
+.image-placeholder {
+  width: 100%;
+  height: 280px;
+  background: #e5dccd;
+}
+
+.clothing-info {
+  padding: 18px;
+}
+
+.clothing-name {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.clothing-meta {
+  display: block;
+  min-height: 62px;
+  margin-top: 8px;
+  color: #7d7468;
+  font-size: 23px;
+  line-height: 1.35;
+}
+
+.delete-btn {
+  width: 120px;
+  height: 56px;
+  margin-top: 12px;
+  color: #b9503b;
+  font-size: 24px;
+  font-weight: 700;
+  background: #f1dfd7;
+  border-radius: 12px;
+}
+
+.floating {
+  position: fixed;
+  left: 28px;
+  right: 28px;
+  bottom: 34px;
+}
+
+.guest {
+  margin-top: 160px;
+}
+
+.guest-btn {
+  margin-top: 26px;
+}

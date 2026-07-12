@@ -5317,6 +5317,16 @@
       "post": {
         "operationId": "WardrobeAdminController_createChallenge",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveStyleChallengeDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -5334,6 +5344,16 @@
       "put": {
         "operationId": "WardrobeAdminController_updateChallenge",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveStyleChallengeDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -6821,6 +6841,10 @@
         "properties": {}
       },
       "CreateFeedbackDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SaveStyleChallengeDto": {
         "type": "object",
         "properties": {}
       }

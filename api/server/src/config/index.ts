@@ -40,6 +40,8 @@ export default () => {
   if (process.env.COS_DOMAIN) config.cos.domain = process.env.COS_DOMAIN;
   if (process.env.COS_LOCATION) config.cos.location = process.env.COS_LOCATION;
   if (process.env.AI_ALLOW_FALLBACK !== undefined) config.aliyun.dashscope.allowFallback = process.env.AI_ALLOW_FALLBACK === 'true';
+  if (process.env.WECHAT_MINI_APPID) config.wechat.miniProgram.appid = process.env.WECHAT_MINI_APPID;
+  if (process.env.WECHAT_MINI_SECRET) config.wechat.miniProgram.secret = process.env.WECHAT_MINI_SECRET;
   if (process.env.RATE_LIMIT_GLOBAL_MAX) config.rateLimit.global.max = Number(process.env.RATE_LIMIT_GLOBAL_MAX);
   if (process.env.RATE_LIMIT_LOGIN_MAX) config.rateLimit.login.max = Number(process.env.RATE_LIMIT_LOGIN_MAX);
   if (process.env.RATE_LIMIT_UPLOAD_MAX) config.rateLimit.upload.max = Number(process.env.RATE_LIMIT_UPLOAD_MAX);

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { MainService } from './main.service';
-import { RegisterDto, LoginDto } from './dto/index';
+import { RegisterDto, LoginDto, WechatLoginDto } from './dto/index';
 import { createMath } from 'src/common/utils/captcha';
 import { ResultData } from 'src/common/utils/result';
 import { GenerateUUID } from 'src/common/utils/index';
@@ -61,6 +61,20 @@ export class MainController {
   @HttpCode(200)
   register(@Body() user: RegisterDto) {
     return this.mainService.register(user);
+  }
+
+  @ApiOperation({
+    summary: '微信小程序登录',
+  })
+  @ApiBody({
+    type: WechatLoginDto,
+    required: true,
+  })
+  @NotRequireAuth()
+  @Post('/app/auth/wechat-login')
+  @HttpCode(200)
+  wechatLogin(@Body() dto: WechatLoginDto, @ClientInfo() clientInfo: ClientInfoDto) {
+    return this.mainService.wechatLogin(dto, clientInfo);
   }
 
   @ApiOperation({

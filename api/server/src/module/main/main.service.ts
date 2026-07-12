@@ -4,7 +4,7 @@ import { SUCCESS_CODE } from 'src/common/utils/result';
 import { UserService } from '../system/user/user.service';
 import { LoginlogService } from '../monitor/loginlog/loginlog.service';
 import { AxiosService } from 'src/module/common/axios/axios.service';
-import { RegisterDto, LoginDto } from './dto/index';
+import { RegisterDto, LoginDto, WechatLoginDto } from './dto/index';
 import { MenuService } from '../system/menu/menu.service';
 import { ClientInfoDto } from 'src/common/decorators/common.decorator';
 @Injectable()
@@ -74,6 +74,10 @@ export class MainService {
    */
   async register(user: RegisterDto) {
     return await this.userService.register(user);
+  }
+
+  async wechatLogin(dto: WechatLoginDto, clientInfo: ClientInfoDto) {
+    return this.userService.wechatLogin(dto, clientInfo);
   }
 
   /**

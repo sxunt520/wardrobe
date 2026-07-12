@@ -1,0 +1,39 @@
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-panel {
+  width: 100%;
+  padding: 42px 34px;
+  background: #fffaf3;
+  border-radius: 26px;
+}
+
+.brand {
+  display: block;
+  color: #8b5f34;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.title {
+  display: block;
+  margin-top: 18px;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1.16;
+}
+
+.desc {
+  display: block;
+  margin: 20px 0 36px;
+  color: #7d7468;
+  font-size: 26px;
+  line-height: 1.45;
+}
+
+.ghost {
+  margin-top: 18px;
+}

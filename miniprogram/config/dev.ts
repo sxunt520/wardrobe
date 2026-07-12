@@ -1,0 +1,6 @@
+export default {
+  env: {
+    TARO_APP_API_BASE_URL: JSON.stringify(process.env.TARO_APP_API_BASE_URL || 'http://139.155.127.129/wardrobe-api'),
+  },
+  mini: {},
+};

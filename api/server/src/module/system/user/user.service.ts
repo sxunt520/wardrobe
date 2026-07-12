@@ -2,8 +2,10 @@ import { Repository, In, Not } from 'typeorm';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
+import axios from 'axios';
 import { RedisService } from 'src/module/common/redis/redis.service';
 import * as bcrypt from 'bcryptjs';
+import { createHash } from 'crypto';
 import { Response } from 'express';
 import { GetNowDate, GenerateUUID, Uniq } from 'src/common/utils/index';
 import { ExportTable } from 'src/common/utils/export';
@@ -12,7 +14,7 @@ import { CacheEnum, DelFlagEnum, StatusEnum, DataScopeEnum } from 'src/common/en
 import { LOGIN_TOKEN_EXPIRESIN, SYS_USER_TYPE } from 'src/common/constant/index';
 import { ResultData } from 'src/common/utils/result';
 import { CreateUserDto, UpdateUserDto, ListUserDto, ChangeStatusDto, ResetPwdDto, AllocatedListDto, UpdateProfileDto, UpdatePwdDto } from './dto/index';
-import { RegisterDto, LoginDto } from '../../main/dto/index';
+import { RegisterDto, LoginDto, WechatLoginDto } from '../../main/dto/index';
 import { AuthUserCancelDto, AuthUserCancelAllDto, AuthUserSelectAllDto } from '../role/dto/index';
 
 import { UserEntity } from './entities/sys-user.entity';
@@ -509,7 +511,7 @@ export class UserService {
    * 注册
    */
   async register(user: RegisterDto) {
-    const loginDate = GetNowDate();
+    const loginDate = new Date();
     const salt = bcrypt.genSaltSync(10);
     if (user.password) {
       user.password = await bcrypt.hashSync(user.password, salt);
@@ -532,6 +534,103 @@ export class UserService {
       userType: SYS_USER_TYPE.CUSTOM,
     });
     return ResultData.ok();
+  }
+
+  async wechatLogin(dto: WechatLoginDto, clientInfo: ClientInfoDto) {
+    if (!dto.code) return ResultData.fail(500, '缺少微信登录 code');
+    const session = await this.getWechatMiniSession(dto.code);
+    const openid = session.openid;
+    const userName = `wx_${createHash('sha1').update(openid).digest('hex').slice(0, 24)}`;
+    const loginDate = new Date();
+    let user = await this.userRepo.findOne({
+      where: { userName },
+      select: ['userId', 'userName', 'nickName', 'avatar'],
+    });
+
+    if (!user) {
+      const salt = bcrypt.genSaltSync(10);
+      user = await this.userRepo.save({
+        userName,
+        nickName: dto.nickName || '微信用户',
+        avatar: dto.avatar || '',
+        password: bcrypt.hashSync(GenerateUUID(), salt),
+        loginDate,
+        loginIp: clientInfo.ipaddr,
+        userType: SYS_USER_TYPE.CLIENT,
+      });
+    } else {
+      await this.userRepo.update(
+        { userId: user.userId },
+        {
+          nickName: dto.nickName || user.nickName || '微信用户',
+          avatar: dto.avatar || user.avatar || '',
+          loginDate,
+          loginIp: clientInfo.ipaddr,
+        },
+      );
+    }
+
+    this.clearCacheByUserId(user.userId);
+    const tokenInfo = await this.createLoginToken(user.userId, clientInfo, loginDate);
+    return ResultData.ok(
+      {
+        token: tokenInfo.token,
+        user: {
+          userId: tokenInfo.user.userId,
+          userName: tokenInfo.user.userName,
+          nickName: tokenInfo.user.nickName,
+          avatar: tokenInfo.user.avatar,
+        },
+      },
+      '登录成功',
+    );
+  }
+
+  private async createLoginToken(userId: number, clientInfo: ClientInfoDto, loginDate: Date) {
+    const userData = await this.getUserinfo(userId);
+    const uuid = GenerateUUID();
+    const token = this.createToken({ uuid, userId: userData.userId });
+    const permissions = await this.getUserPermissions(userData.userId);
+    const roles = (userData.roles || []).map((item) => item.roleKey);
+    const userInfo = {
+      browser: clientInfo.browser,
+      ipaddr: clientInfo.ipaddr,
+      loginLocation: clientInfo.loginLocation,
+      loginTime: loginDate,
+      os: clientInfo.os,
+      permissions,
+      roles,
+      token: uuid,
+      user: userData,
+      userId: userData.userId,
+      userName: userData.userName,
+      deptId: userData.deptId,
+    };
+    delete userData.password;
+    await this.updateRedisToken(uuid, userInfo);
+    return { token, user: userData };
+  }
+
+  private async getWechatMiniSession(code: string): Promise<{ openid: string; unionid?: string; session_key?: string }> {
+    const appid = process.env.WECHAT_MINI_APPID;
+    const secret = process.env.WECHAT_MINI_SECRET;
+    if (!appid || !secret) {
+      throw new BadRequestException('微信小程序 appid/secret 尚未配置，请先设置 WECHAT_MINI_APPID 和 WECHAT_MINI_SECRET');
+    }
+    const response = await axios.get('https://api.weixin.qq.com/sns/jscode2session', {
+      params: {
+        appid,
+        secret,
+        js_code: code,
+        grant_type: 'authorization_code',
+      },
+      timeout: 10000,
+    });
+    const data = response.data;
+    if (!data?.openid) {
+      throw new BadRequestException(data?.errmsg || '微信登录凭证校验失败');
+    }
+    return data;
   }
 
   /**
